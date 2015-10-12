@@ -1,0 +1,7 @@
+master:	ssh -i caitreizman.pem ubuntu@X
+RP1:	ssh -i caitreizman.pem ubuntu@Y
+RP2:	ssh -i caitreizman.pem ubuntu@Z
+
+X:52.24.171.18
+Y:52.88.4.182
+Z:52.26.202.146
