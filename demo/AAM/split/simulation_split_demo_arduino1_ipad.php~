@@ -1,0 +1,185 @@
+<html>
+  <head>
+    <title>DEMO</title>
+    <META http-equiv="refresh" content="1;URL=simulation_split_demo_arduino1_ipad.php">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+  </head>
+  <body bgcolor="#ffffff">
+    <center>
+    <?php
+      $x=0;
+      $y=0;
+    ?>
+      <table>
+        <?php
+          $con=mysqli_connect("localhost","root","hogsmeade","rfid");
+          if (mysqli_connect_errno()){echo "Failed to connect to MySQL:".mysqli_connect_error();}
+          $result0 = mysqli_query($con,"SET character_set_results=utf8");
+          $result = mysqli_query($con,"SELECT count(*) FROM log_arduino1");                
+          $elements = (mysqli_fetch_assoc($result));
+          if ($elements['count(*)']>0) {  
+            if ($elements['count(*)']==1) {
+            echo "<table border='1'><tr><td colspan='2' align='center'><font size='4'>PLEASE SCAN ANY RFID TAG</td></tr></table>";
+            }else{
+              echo "<table>";
+              $result = mysqli_query($con,"SELECT count(distinct(rfid_tag)) FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B'");
+              $visitors = mysqli_fetch_row($result);
+              $visitors = $visitors[0];
+              //echo "visitors:'".$visitors."'<br>";
+              switch($visitors){
+                case 1:
+		   $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B'");
+                  echo "<tr>";
+		   while ($row = mysqli_fetch_row($result)){
+		     $result2 = mysqli_query($con,"SELECT * FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC LIMIT 1");
+		     $row2 = (mysqli_fetch_assoc($result2));
+		     $result3 = mysqli_query($con,"SELECT text,visitor,ID FROM content_arduino1 WHERE value='".$row2['rfid_tag']."'");
+		     $row3 = mysqli_fetch_row($result3);
+		     echo "<td><table border='1'><tr><td align='center' width='125' height='110'>".$row3[1]."</td>";
+		     echo "<td width='250' height='110'><font size='4'><p align='";
+                    if(strcmp($row3[2],"Y1")==0){echo "right";}
+                    else{echo "left";}		     
+		     echo "'>".$row3[0]."</p></td></tr></table></td>"; 
+		   }                
+		   echo "</tr>";
+                break;
+                
+                case 2:
+		   $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B'");
+                  echo "<tr>";
+		   while ($row = mysqli_fetch_row($result)){
+		     $result2 = mysqli_query($con,"SELECT * FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC LIMIT 1");
+		     $row2 = (mysqli_fetch_assoc($result2));
+		     $result3 = mysqli_query($con,"SELECT text,visitor,ID FROM content_arduino1 WHERE value='".$row2['rfid_tag']."'");
+		     $row3 = mysqli_fetch_row($result3);
+		     echo "<td><table border='1'><tr><td align='center' width='125' height='110'>".$row3[1]."</td>";
+		     echo "<td width='250' height='110'><font size='4'><p align='";
+                    if(strcmp($row3[2],"Y1")==0){echo "right";}
+                    else{echo "left";}		     
+		     echo "'>".$row3[0]."</p></td></tr></table></td>"; 
+		   }                
+		   echo "</tr>";
+                break;
+
+                case 3:
+		   $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B'");
+                  echo "<tr>";
+		   while ($row = mysqli_fetch_row($result)){
+		     $result2 = mysqli_query($con,"SELECT * FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC LIMIT 1");
+		     $row2 = (mysqli_fetch_assoc($result2));
+		     $result3 = mysqli_query($con,"SELECT text,visitor,ID FROM content_arduino1 WHERE value='".$row2['rfid_tag']."'");
+		     $row3 = mysqli_fetch_row($result3);
+		     echo "<td><table border='1'><tr><td align='center' width='125' height='110'>".$row3[1]."</td>";
+		     echo "<td width='250' height='110'><font size='4'><p align='";
+                    if(strcmp($row3[2],"Y1")==0){echo "right";}
+                    else{echo "left";}		     
+		     echo "'>".$row3[0]."</p></td></tr></table></td>"; 
+		   }                
+		   echo "</tr>";
+		 break;
+
+                case 4:
+		   $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B'");
+                  echo "<tr>";
+                  $x=0;
+		   while ($row = mysqli_fetch_row($result)){
+		     $result2 = mysqli_query($con,"SELECT * FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC LIMIT 1");
+		     $row2 = (mysqli_fetch_assoc($result2));
+		     $result3 = mysqli_query($con,"SELECT text,visitor,ID FROM content_arduino1 WHERE value='".$row2['rfid_tag']."'");
+		     $row3 = mysqli_fetch_row($result3);
+		     if($x<2){
+                      $x++;
+		       echo "<td><table border='1'><tr><td align='center' width='125' height='110'>".$row3[1]."</td>";
+		       echo "<td width='250' height='110'><font size='4'><p align='";
+                      if(strcmp($row3[2],"Y1")==0){echo "right";}
+                      else{echo "left";}		     
+		       echo "'>".$row3[0]."</p></td></tr></table></td>"; 
+                    }
+                    else{
+                      $x=0;
+                      echo "</tr><tr>";                      
+		       echo "<td><table border='1'><tr><td align='center' width='125' height='110'>".$row3[1]."</td>";
+		       echo "<td width='250' height='110'><font size='4'><p align='";
+                      if(strcmp($row3[2],"Y1")==0){echo "right";}
+                      else{echo "left";}		     
+		       echo "'>".$row3[0]."</p></td></tr></table></td>"; 
+                    }
+		   }                
+		   echo "</tr>";
+		 break;
+
+                case 5:
+		   $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B'");
+                  echo "<tr>";
+                  $x=0;
+		   while ($row = mysqli_fetch_row($result)){
+		     $result2 = mysqli_query($con,"SELECT * FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC LIMIT 1");
+		     $row2 = (mysqli_fetch_assoc($result2));
+		     $result3 = mysqli_query($con,"SELECT text,visitor,ID FROM content_arduino1 WHERE value='".$row2['rfid_tag']."'");
+		     $row3 = mysqli_fetch_row($result3);
+                    if($x<3){
+                      $x++;
+		       echo "<td><table border='1'><tr><td align='center' width='125' height='110'>".$row3[1]."</td>";
+		       echo "<td width='250' height='110'><font size='4'><p align='";
+                      if(strcmp($row3[2],"Y1")==0){echo "right";}
+                      else{echo "left";}		     
+		       echo "'>".$row3[0]."</p></td></tr></table></td>"; 
+                    }
+                    else{
+                      $x=0;
+                      echo "</tr><tr><table><tr>";                      
+		       echo "<td><table border='1'><tr><td align='center' width='125' height='110'>".$row3[1]."</td>";
+		       echo "<td width='250' height='110'><font size='4'><p align='";
+                      if(strcmp($row3[2],"Y1")==0){echo "right";}
+                      else{echo "left";}		     
+		       echo "'>".$row3[0]."</p></td></tr></table></td>"; 
+                    }
+		   }                
+		   echo "</tr></table></tr>";
+		 break;
+		 
+		 
+                case 6:
+		   $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B'");
+                  echo "<tr>";
+                  $x=0;
+		   while ($row = mysqli_fetch_row($result)){
+		     $result2 = mysqli_query($con,"SELECT * FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC LIMIT 1");
+		     $row2 = (mysqli_fetch_assoc($result2));
+		     $result3 = mysqli_query($con,"SELECT text,visitor,ID FROM content_arduino1 WHERE value='".$row2['rfid_tag']."'");
+		     $row3 = mysqli_fetch_row($result3);
+                    if($x<3){
+                      $x++;
+		       echo "<td><table border='1'><tr><td align='center' width='125' height='110'>".$row3[1]."</td>";
+		       echo "<td width='250' height='110'><font size='4'><p align='";
+                      if(strcmp($row3[2],"Y1")==0){echo "right";}
+                      else{echo "left";}		     
+		       echo "'>".$row3[0]."</p></td></tr></table></td>"; 
+                    }
+                    else{
+                      $x=0;
+                      echo "</tr><tr>";                      
+		       echo "<td><table border='1'><tr><td align='center' width='125' height='110'>".$row3[1]."</td>";
+		       echo "<td width='250' height='110'><font size='4'><p align='";
+                      if(strcmp($row3[2],"Y1")==0){echo "right";}
+                      else{echo "left";}		     
+		       echo "'>".$row3[0]."</p></td></tr></table></td>"; 
+                    }
+		   }                
+		   echo "</tr>";
+		 break;
+		 
+              }
+
+              
+             
+            }
+          }
+          else{
+            echo "<tr><td colspan='2' align='center'><font size='4'>CLICK 'ON' BUTTON TO START SPLIT DEMO</td></tr>";
+          }
+        ?>              
+      </table>
+    </center>
+  </body>
+</html>

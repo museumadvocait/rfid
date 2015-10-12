@@ -1,0 +1,10 @@
+<?php
+$con=mysqli_connect("54.187.241.251","root","hogsmeade","test");
+// Check connection
+if (mysqli_connect_errno()) {
+  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+}
+
+mysqli_query($con,"INSERT INTO test (test) VALUES ('test!')");
+mysqli_close($con);
+?> 
