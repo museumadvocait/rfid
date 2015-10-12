@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<?php
+  if (isset($_POST["demo"])) {$demo = $_POST["demo"];}
+  if (isset($_POST["pc"])) {$pc = $_POST["pc"];}
+  if (isset($_POST["mobile"])) {$mobile = $_POST["mobile"];}
+  if (isset($_POST["ipad"])) {$ipad = $_POST["ipad"];}
+  if (isset($_POST["rp"])) {$rp = $_POST["rp"];}
+  if (isset($_POST["other"])) {$other = $_POST["other"];}
+  $conn = new mysqli("50.112.139.224", "agutie02", "hogsmeade", "rfid");
+  // Check connection
+  if ($conn->connect_error){die("Connection failed: " . $conn->connect_error);} 
+  $query="UPDATE demo SET module='".$demo."'";
+  if (!mysqli_query($conn, $query)){echo "Error updating record";}
+ 
+  $query="UPDATE device SET value='".$pc."' where device='pc'";
+  if (!mysqli_query($conn, $query)){echo "Error updating record";} 
+  $query="UPDATE device SET value='".$mobile."' where device='mobile'";
+  if (!mysqli_query($conn, $query)){echo "Error updating record";} 
+  $query="UPDATE device SET value='".$ipad."' where device='ipad'";
+  if (!mysqli_query($conn, $query)){echo "Error updating record";} 
+  $query="UPDATE device SET value='".$rp."' where device='rp'";
+  if (!mysqli_query($conn, $query)){echo "Error updating record";} 
+  $query="UPDATE device SET value='".$other."' where device='other'";
+  if (!mysqli_query($conn, $query)){echo "Error updating record";} 
+  mysqli_close($conn);
+?>
+<html>
+<body>
+<form action="index.php" method="POST">
+  <table>
+    <tr><td colspan="2">CHOOSE:</td></tr>
+    <tr>
+      <td>
+        <table>
+          <tr><td>MODULE</td></tr>
+          <tr><td><input <?php if($demo==1){echo "checked=\"checked\"";}?> type="radio" name="demo" value="1" >Language Accessibility</td></tr>
+          <tr><td><input <?php if($demo==2){echo "checked=\"checked\"";}?> type="radio" name="demo" value="2">Content Aggregation</td></tr>
+          <tr><td><input <?php if($demo==3){echo "checked=\"checked\"";}?> type="radio" name="demo" value="3">Time-based Preference Prediction</td></tr>
+          <tr><td><input <?php if($demo==4){echo "checked=\"checked\"";}?> type="radio" name="demo" value="4">Repeat-visit Recognition</td></tr>
+          <tr><td><input <?php if($demo==5){echo "checked=\"checked\"";}?> type="radio" name="demo" value="5">Multi-user Accommodation</td></tr>
+        </table>
+      </td>
+      <td>
+        <table>
+          <tr><td>DEVICE</td></tr>
+          <tr><td><input <?php if($pc==1){echo "checked=\"checked\"";}?> type="checkbox" name="pc" value="1" >Computer</td></tr>
+          <tr><td><input <?php if($mobile==1){echo "checked=\"checked\"";}?> type="checkbox" name="mobile" value="1">Mobile</td></tr>
+          <tr><td><input <?php if($ipad==1){echo "checked=\"checked\"";}?> type="checkbox" name="ipad" value="1">iPad</td></tr>
+          <tr><td><input <?php if($rp==1){echo "checked=\"checked\"";}?> type="checkbox" name="rp" value="1">Raspberry Pi</td></tr>
+          <tr><td><input <?php if($other==1){echo "checked=\"checked\"";}?> type="checkbox" name="other" value="1">Other</td></tr>
+        </table>
+      </td>
+    </tr>
+    <tr><td colspan='2'><input type="submit"></td></tr>
+  </table>
+<?php
+  if (isset($_POST["demo"])) {$demo = $_POST["demo"];}
+  else{
+    if (isset($_POST["current"])) {$current = $_POST["current"];}
+  }
+  $demo='';
+  $demo = $_POST["demo"];
+?>
+  <input type="hidden" name="current" value="<?php if(strlen($demo)==0){echo "0";}else{echo $demo;}?>">
+
+</form>
+
+<?php
+if($demo==1){
+?>
+<table border='1'>
+  <tr><td>1. Language Accessibility</td></tr>
+  <tr><td><a href="reset.php">RESET</a></td></tr>
+  <tr><td><a href="language/simulation_language.php" target="_blank">SIMULATION</a></td></tr>
+  <tr><td><a href="language/language_demo_arduino1.php" target="_blank">PC</a></td></tr>    
+<?php  
+  //echo '<tr><td><a href="language/simulation_language_demo_arduino1_ipad.php" target="_blank">iPAD</a></td></tr>';
+?>
+  <tr><td><a href="language/simulation_language_demo_arduino1_ipad2.php" target="_blank">iPAD</a></td></tr>    
+</table><br>
+<?php
+}
+if($demo==2){
+?>
+<table border='1'>
+  <tr><td colspan='2'>2. Content Aggregation</td></tr>
+  <tr>
+    <td align='center'>
+      <table border='1'>
+        <tr><td>   From Object #1</td></tr>
+        <tr><td><a href="reset.php">RESET</a></td></tr>
+        <tr><td><a href="aggregation/simulation_aggregation1.php" target="_blank">SIMULATION</a></td></tr>          
+        <tr><td><a href="aggregation/aggregation_demo1.php" target="_blank">PC</a></td></tr>  
+        <tr><td><a href="aggregation/simulation_aggregation_demo_ipad1.php" target="_blank">iPAD</a></td></tr>      
+      </table>
+    </td>
+    <td align='center'>
+      <table border='1'>
+        <tr><td>   From Object #2</td></tr>
+        <tr><td><a href="reset.php">RESET</a></td></tr>
+        <tr><td><a href="aggregation/simulation_aggregation2.php" target="_blank">SIMULATION</a></td></tr>                  
+        <tr><td><a href="aggregation/aggregation_demo2.php" target="_blank">PC</a></td></tr>          
+        <tr><td><a href="aggregation/simulation_aggregation_demo_ipad2.php" target="_blank">iPAD</a></td></tr>      
+      </table>
+    </td>  
+  </tr>  
+</table><br>
+<?php
+}
+if($demo==3){
+?>
+<table border='1'>
+  <tr><td>3. Time-based Preference Prediction</td></tr>
+  <tr><td><a href="reset.php">RESET</a></td></tr>
+  <tr><td><a href="update_aggregation/simulation_update_aggregation.php" target="_blank">SIMULATION</a></td></tr>    
+  <tr><td><a href="update_aggregation/update_aggregation_demo.php" target="_blank">PC</a></td></tr>  
+  <tr><td><a href="update_aggregation/simulation_update_aggregation_demo_ipad1.php" target="_blank">iPAD</a></td></tr>  
+</table><br>
+<?php
+}
+if($demo==4){
+?>
+<table border='1'>
+  <tr><td>4. Repeat-visit Recognition</td></tr>
+  <tr><td><a href="reset.php">RESET</a></td></tr>
+  <tr><td><a href="update/simulation_update.php" target="_blank">SIMULATION</a></td></tr>
+  <tr><td><a href="update/update_demo.php" target="_blank">PC</a></td></tr>    
+  <tr><td><a href="update/simulation_update_demo_ipad1.php" target="_blank">iPAD</a></td></tr>  
+</table><br>
+<?php
+}
+if($demo==5){
+?>
+<table border='1'>
+  <tr><td>5. Multi-user Accommodation</td></tr>
+  <tr><td><a href="reset.php">RESET</a></td></tr>
+  <tr><td><a href="split/simulation_split.php" target="_blank">SIMULATION</a></td></tr>    
+  <tr><td><a href="split/split_demo.php" target="_blank">PC</a></td></tr>  
+  <tr><td><a href="split/simulation_split_demo_arduino1_ipad.php" target="_blank">iPAD</a></td></tr>  
+</table><br>
+</body>
+</html>
+<?php
+}
+?>

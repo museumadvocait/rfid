@@ -1,0 +1,70 @@
+<?php
+  include("db.php");  
+  $flag=0;
+  if(isset($_POST["rfid_tag1"])){
+    $rfid_tag1=$_POST["rfid_tag1"];
+    if(strcmp($rfid_tag1,"0D001EFE967B")==0){
+      $query2 = "SELECT count(*) FROM log_arduino1 WHERE rfid_tag='".$rfid_tag1."'";
+      $result2 = mysql_query($query2);
+      $row = mysql_fetch_row($result2);
+      if ($row[0]!= 0){
+        $query3 = "TRUNCATE log_arduino1";
+        $result3 = mysql_query($query3);
+        $flag=0;
+      }
+      else{
+        $query="INSERT INTO log_arduino1(unix_timestamp,rfid_tag,arduino,arduino_timestamp) VALUES (".time().",'".$rfid_tag1."',1,".time().");";
+        $result = mysql_query($query);
+        $flag=1;
+      }
+    }
+    else{
+      if(isset($_POST["submit1"])){
+        $submit1=$_POST["submit1"];
+        if(strcmp($submit1,"ON")==0){
+          $flag=0;
+        }
+        else if(strcmp($submit1,"RESET")==0){
+          $query3 = "TRUNCATE log_arduino1";
+          $result3 = mysql_query($query3);
+          $query="INSERT INTO log_arduino1(unix_timestamp,rfid_tag,arduino,arduino_timestamp) VALUES (".time().",'0D001EFE967B',1,".time().");";
+          $result = mysql_query($query);
+          $flag=1;
+        }
+        else{
+          $query="INSERT INTO log_arduino1(unix_timestamp,rfid_tag,arduino,arduino_timestamp) VALUES (".time().",'".$rfid_tag1."',1,".time().");";
+          $result = mysql_query($query);
+          $flag=1;
+        }
+      }
+    }
+  }
+?>
+<html>
+  <head>
+    <title>DEMO</title>
+    <META http-equiv="refresh" content="100;URL=simulation_update_arduino1.php">
+  </head>
+  <body bgcolor="#ffffff">
+    <table border="1" align="center">
+      <tr><td colspan="8" align="center">OBJECT #1</td></tr>
+      <tr>
+        <td>
+          <form action="simulation_update_arduino1.php" method="post">
+            <input type="hidden" name="rfid_tag1" value="0D001EFE967B">
+            <input type="submit" name="submit1" value="<?php if($flag==0) echo "ON"; else if($flag==1) echo "OFF";?>" />
+          </form>
+        </td>
+        <td><form action="simulation_update_arduino1.php" method="post"><input type="hidden" name="rfid_tag1" value="0C00319AFB5C"><input type="submit" name="submit1" value="Visitor1" /></form></td>
+     <?php
+/*        <td><form action="simulation_update_arduino1.php" method="post"><input type="hidden" name="rfid_tag1" value="0C004745E6E8"><input type="submit" name="submit1" value="Visitor2" /></form></td>
+        <td><form action="simulation_update_arduino1.php" method="post"><input type="hidden" name="rfid_tag1" value="10002144F782"><input type="submit" name="submit1" value="Visitor3" /></form></td>
+        <td><form action="simulation_update_arduino1.php" method="post"><input type="hidden" name="rfid_tag1" value="100021574523"><input type="submit" name="submit1" value="Visitor4" /></form></td>
+        <td><form action="simulation_update_arduino1.php" method="post"><input type="hidden" name="rfid_tag1" value="0F002D84BD1B"><input type="submit" name="submit1" value="Visitor5" /></form></td>
+        <td><form action="simulation_update_arduino1.php" method="post"><input type="hidden" name="rfid_tag1" value="0F00305F1777"><input type="submit" name="submit1" value="Visitor6" /></form></td>
+  */      ?>
+        <td><form action="simulation_update_arduino1.php" method="post"><input type="hidden" name="rfid_tag1" value="000000000000"><input type="submit" name="submit1" value="RESET" /></form></td>                
+      </tr>      
+    </table>
+  </body>
+</html>

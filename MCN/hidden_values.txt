@@ -1,0 +1,6 @@
+<input type="hidden" name="demo" value="<?php echo $demo;?>">
+<input type="hidden" name="pc" value="<?php echo pc;$?>">
+<input type="hidden" name="mobile" value="<?php echo $mobile;?>">
+<input type="hidden" name="ipad" value="<?php echo $ipad;?>">
+<input type="hidden" name="rp" value="<?php echo $rp;?>">
+<input type="hidden" name="other" value="<?php echo $other;?>">

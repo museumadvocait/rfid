@@ -1,0 +1,345 @@
+<?php
+  $con=mysqli_connect("localhost","root","hogsmeade","rfid");
+  if (mysqli_connect_errno()){echo "Failed to connect to MySQL:".mysqli_connect_error();}
+  $result = mysqli_query($con,"SELECT rfid_tag FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' ORDER BY unix_timestamp DESC");
+  $row_cnt = mysqli_num_rows($result);
+  if($row_cnt==0){$flag1=-1;}
+  else{$flag1=0;}
+  $result = mysqli_query($con,"SELECT rfid_tag FROM log_arduino2 WHERE rfid_tag!='0D001EFE967B' ORDER BY unix_timestamp DESC");
+  $row_cnt = mysqli_num_rows($result);
+  if($row_cnt==0){$flag2=-1;}
+  else{$flag2=0;}
+//  echo "flag1 has:'".$flag1."'<br>";
+//  echo "flag2 has:'".$flag2."'<br>";    
+  if(($flag1==-1)&&($flag2==-1)){$flag=-1;}
+  else if(($flag1==0)&&($flag2==-1)){$flag=0;}
+  else if(($flag1==-1)&&($flag2==0)){$flag=1;}
+  else if(($flag1==0)&&($flag2==0)){$flag=2;}
+//  echo "flag has:'".$flag."'<br>";
+?>
+<html>
+  <head>
+    <title>UPDATE AGGREGATION</title>
+    <META http-equiv="refresh" content="2;URL=update_aggregation_demo.php">
+  </head>
+  <body bgcolor="#ffffff">
+    <center>
+        <?php        
+          if($flag==-1){
+ //           echo "<table border='1'><tr><td colspan='3'><font size='4'>PLEASE SCAN ANY RFID TAG</td></tr></table>";
+          }
+          else{
+            if($flag==0){
+              $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' ORDER BY unix_timestamp DESC");
+              while ($row = mysqli_fetch_row($result)) {
+                $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC");
+                while ($row2 = mysqli_fetch_row($result2)) {              
+                  $result3 = mysqli_query($con,"INSERT INTO aggregation_arduino1_log(unix_timestamp,rfid_tag,arduino,arduino_timestamp) VALUES (".$row2[0].",'".$row2[1]."',".$row2[2].",".$row2[3].");");              
+                }
+              }
+              $start=14000000000;
+              $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B'");
+              while ($row = mysqli_fetch_row($result)){
+                $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' GROUP BY unix_timestamp,rfid_tag, arduino,arduino_timestamp ORDER BY unix_timestamp ASC");
+                while ($row2 = mysqli_fetch_row($result2)){
+                  if($row2[0]<$start) $start=$row2[0];
+                }
+              }
+              $update0=$start;
+              $update1=$start+1;
+              $update2=$start+5;
+              $update3=$start+10;
+              $update4=$start+25;
+              $update5=$start+50;
+              $update6=$start+100;
+              $update7=$start+200;
+              
+              $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B'");
+              while ($row = mysqli_fetch_row($result)) {
+                $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp ASC");
+                echo "<table border='1'><tr><td>WHO</td><td>OBJECT(#)</td><td>TIMESTAMP</td><td>CONTENT</td></tr>";
+                while ($row2 = mysqli_fetch_row($result2)) {
+                  if($row2[2]==1){
+                    $result3 = mysqli_query($con,"SELECT visitor FROM content_arduino1 WHERE value='".$row2[1]."'");
+                    $row3 = mysqli_fetch_row($result3);
+                    echo "<tr><td align='center'>".$row3[0]."</td><td align='center'>1</td><td align='center'>".date("D M j G:i:s",$row2[0])."</td>";
+                         if(($update0<$row2[0])&&($row2[0]<=$update1))  echo "<td align='center'>content0</td>";
+                    else if(($update1<$row2[0])&&($row2[0]<=$update2))  echo "<td align='center'>content1</td>";
+                    else if(($update2<$row2[0])&&($row2[0]<=$update3))  echo "<td align='center'>content2</td>";
+                    else if(($update3<$row2[0])&&($row2[0]<=$update4))  echo "<td align='center'>content3</td>";
+                    else if(($update4<$row2[0])&&($row2[0]<=$update5))  echo "<td align='center'>content4</td>";
+                    else if(($update5<$row2[0])&&($row2[0]<=$update6))  echo "<td align='center'>content5</td>";
+                    else if(($update6<$row2[0])&&($row2[0]<=$update7))  echo "<td align='center'>content6</td>";
+                    else if(($row2[0]<$update7))  echo "<td width='550'>Notice the distinctly darker shades of the colors in this shawl from El Salvador, compared to the dress from Guatemala. The indigo color is created from El Salvador’s native plants.</td>";
+                    echo "</tr>";
+                  }
+                  else if($row2[2]==2){
+                    $result3 = mysqli_query($con,"SELECT visitor FROM content_arduino1 WHERE value='".$row2[1]."'");
+                    $row3 = mysqli_fetch_row($result3);
+                    echo "<tr><td align='center'>".$row3[0]."</td><td align='center'>2</td><td align='center'>".date("D M j G:i:s",$row2[0])."</td>";
+                         if(($update0<$row2[0])&&($row2[0]<=$update1))  echo "<td align='center'>content0</td>";
+                    else if(($update1<$row2[0])&&($row2[0]<=$update2))  echo "<td align='center'>content1</td>";
+                    else if(($update2<$row2[0])&&($row2[0]<=$update3))  echo "<td align='center'>content2</td>";
+                    else if(($update3<$row2[0])&&($row2[0]<=$update4))  echo "<td align='center'>content3</td>";
+                    else if(($update4<$row2[0])&&($row2[0]<=$update5))  echo "<td align='center'>content4</td>";
+                    else if(($update5<$row2[0])&&($row2[0]<=$update6))  echo "<td align='center'>content5</td>";
+                    else if(($update6<$row2[0])&&($row2[0]<=$update7))  echo "<td align='center'>content6</td>";
+                    else if(($row2[0]<$update7))  echo "<td align='center'>content</td>";
+                    echo "</tr>";
+                  }
+                }
+                echo "</table><br>";
+              }    
+              $result3 = mysqli_query($con,"TRUNCATE aggregation_arduino1_log");                          
+            }
+            else if($flag==1){
+              $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino2 WHERE rfid_tag!='0D001EFE967B' ORDER BY unix_timestamp DESC");
+              while ($row = mysqli_fetch_row($result)) {
+                $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM log_arduino2 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC");
+                while ($row2 = mysqli_fetch_row($result2)) {              
+                  $result3 = mysqli_query($con,"INSERT INTO aggregation_arduino2_log(unix_timestamp,rfid_tag,arduino,arduino_timestamp) VALUES (".$row2[0].",'".$row2[1]."',".$row2[2].",".$row2[3].");");              
+                }
+              }
+
+              $start=14000000000;
+
+              $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B'");
+              while ($row = mysqli_fetch_row($result)){
+                $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' GROUP BY unix_timestamp,rfid_tag, arduino,arduino_timestamp ORDER BY unix_timestamp ASC");
+                while ($row2 = mysqli_fetch_row($result2)){
+                  if($row2[0]<$start) $start=$row2[0];
+                }
+              }
+              $update0=$start;
+              $update1=$start+1;
+              $update2=$start+5;
+              $update3=$start+10;
+              $update4=$start+25;
+              $update5=$start+50;
+              $update6=$start+100;
+              $update7=$start+200;
+              
+              $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM aggregation_arduino2_log WHERE rfid_tag!='0D001EFE967B'");
+              while ($row = mysqli_fetch_row($result)) {
+                $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM aggregation_arduino2_log WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp ASC");
+                echo "<table border='1'><tr><td>WHO</td><td>OBJECT(#)</td><td>TIMESTAMP</td><td>CONTENT</td></tr>";
+                while ($row2 = mysqli_fetch_row($result2)) {
+                  if($row2[2]==1){
+                    $result3 = mysqli_query($con,"SELECT visitor FROM content_arduino1 WHERE value='".$row2[1]."'");
+                    $row3 = mysqli_fetch_row($result3);
+                    echo "<tr><td align='center'>".$row3[0]."</td><td align='center'>1</td><td align='center'>".date("D M j G:i:s",$row2[0])."</td>";
+                         if(($update0<$row2[0])&&($row2[0]<=$update1))  echo "<td align='center'>content0</td>";
+                    else if(($update1<$row2[0])&&($row2[0]<=$update2))  echo "<td align='center'>content1</td>";
+                    else if(($update2<$row2[0])&&($row2[0]<=$update3))  echo "<td align='center'>content2</td>";
+                    else if(($update3<$row2[0])&&($row2[0]<=$update4))  echo "<td align='center'>content3</td>";
+                    else if(($update4<$row2[0])&&($row2[0]<=$update5))  echo "<td align='center'>content4</td>";
+                    else if(($update5<$row2[0])&&($row2[0]<=$update6))  echo "<td align='center'>content5</td>";
+                    else if(($update6<$row2[0])&&($row2[0]<=$update7))  echo "<td align='center'>content6</td>";
+                    else if(($row2[0]<$update7))  echo "<td align='center'>content</td>";
+                    echo "</tr>";
+                  }
+                  else if($row2[2]==2){
+                    $result3 = mysqli_query($con,"SELECT visitor FROM content_arduino1 WHERE value='".$row2[1]."'");
+                    $row3 = mysqli_fetch_row($result3);
+                    echo "<tr><td align='center'>".$row3[0]."</td><td align='center'>2</td><td align='center'>".date("D M j G:i:s",$row2[0])."</td>";
+                         if(($update0<$row2[0])&&($row2[0]<=$update1))  echo "<td align='center'>content0</td>";
+                    else if(($update1<$row2[0])&&($row2[0]<=$update2))  echo "<td align='center'>content1</td>";
+                    else if(($update2<$row2[0])&&($row2[0]<=$update3))  echo "<td align='center'>content2</td>";
+                    else if(($update3<$row2[0])&&($row2[0]<=$update4))  echo "<td align='center'>content3</td>";
+                    else if(($update4<$row2[0])&&($row2[0]<=$update5))  echo "<td align='center'>content4</td>";
+                    else if(($update5<$row2[0])&&($row2[0]<=$update6))  echo "<td align='center'>content5</td>";
+                    else if(($update6<$row2[0])&&($row2[0]<=$update7))  echo "<td align='center'>content6</td>";
+                    else if(($row2[0]<$update7))  {echo "<td width='550'>Notice the distinctly lighter shades of the colors in this dress from Guatemala, compared to the shawl from El Salvador. Common Guatemalan plants for making clothing dyes are coconut shell, which makes a pinkish-beige color, and St. John's Wort, which makes a yellow color.</td>";break;}
+                    echo "</tr>";
+                  }
+                }
+                echo "</table><br>";
+              }    
+              $result3 = mysqli_query($con,"TRUNCATE aggregation_arduino2_log");                          
+            }
+            else if($flag==2){
+              $count11=0;$count12=0;$count1=0;
+              /*$count21=0;$count22=0;$count2=0;              
+              $count31=0;$count32=0;$count3=0;              
+              $count41=0;$count42=0;$count4=0;              
+              $count51=0;$count52=0;$count5=0;              
+              $count61=0;$count62=0;$count6=0;*/
+              
+              $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' ORDER BY unix_timestamp DESC");
+              while ($row = mysqli_fetch_row($result)) {
+                $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM log_arduino1 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC");
+                while ($row2 = mysqli_fetch_row($result2)) {              
+                  $result3 = mysqli_query($con,"INSERT INTO aggregation_arduino1_log(unix_timestamp,rfid_tag,arduino,arduino_timestamp) VALUES (".$row2[0].",'".$row2[1]."',".$row2[2].",".$row2[3].");");              
+                  if($row2[2]==1){
+                  $result3 = mysqli_query($con,"SELECT visitor FROM content_arduino1 WHERE value='".$row2[1]."'");                  
+                  $row3 = mysqli_fetch_row($result3);
+                  if(strstr($row3[0],'Visitor1')){$count11++;$count1=$count11+$count12;}
+                  /*if(strstr($row3[0],'Visitor2')){$count21++;$count2=$count21+$count32;}
+                  if(strstr($row3[0],'Visitor3')){$count31++;$count3=$count31+$count32;}                  
+                  if(strstr($row3[0],'Visitor4')){$count41++;$count4=$count41+$count42;}
+                  if(strstr($row3[0],'Visitor5')){$count51++;$count5=$count51+$count52;}
+                  if(strstr($row3[0],'Visitor6')){$count61++;$count6=$count61+$count62;}*/
+                  }
+                }
+              }
+              $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM log_arduino2 WHERE rfid_tag!='0D001EFE967B' ORDER BY unix_timestamp DESC");
+              while ($row = mysqli_fetch_row($result)) {
+                $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM log_arduino2 WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' ORDER BY unix_timestamp DESC");
+                while ($row2 = mysqli_fetch_row($result2)) {              
+                  $result3 = mysqli_query($con,"INSERT INTO aggregation_arduino1_log(unix_timestamp,rfid_tag,arduino,arduino_timestamp) VALUES (".$row2[0].",'".$row2[1]."',".$row2[2].",".$row2[3].");");              
+                  if($row2[2]==2){
+                  $result3 = mysqli_query($con,"SELECT visitor FROM content_arduino1 WHERE value='".$row2[1]."'");                  
+                  $row3 = mysqli_fetch_row($result3);
+                  if(strstr($row3[0],'Visitor1')){$count12++;$count1=$count11+$count12;}
+/*
+                  lif(strstr($row3[0],'Visitor2')){$count22++;$count2=$count21+$count32;}
+                  if(strstr($row3[0],'Visitor3')){$count32++;$count3=$count31+$count32;}                  
+                  if(strstr($row3[0],'Visitor4')){$count42++;$count4=$count41+$count42;}
+                  if(strstr($row3[0],'Visitor5')){$count52++;$count5=$count51+$count52;}
+                  if(strstr($row3[0],'Visitor6')){$count62++;$count6=$count61+$count62;}                  
+*/                  
+                  }                  
+                }
+              }
+              //echo "count1:'".$count1."'<br>";
+              if($count1>=2){$flag_count=1;}
+              else{$flag_count=0;}
+              //echo "count1:'".$count1."'<br>";              
+
+              echo "<table border='1'><tr><td align='center'>Arduino1(#)</td><td align='center'>Arduino2(#)</td><td align='center'>TOTAL</td></tr>";
+              echo "<tr><td align='center'>".$count11."</td><td align='center'>".$count12."</td><td align='center'>".$count1."</td></tr></table><br>";              
+              
+              
+              $start=14000000000;
+
+              $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B'");
+              while ($row = mysqli_fetch_row($result)){
+
+                $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' GROUP BY unix_timestamp,rfid_tag, arduino,arduino_timestamp ORDER BY unix_timestamp ASC");
+                while ($row2 = mysqli_fetch_row($result2)){
+                  if($row2[0]<$start) $start=$row2[0];
+
+                }
+
+              }
+              $update0=$start;
+              $update1=$start+1;
+              $update2=$start+5;
+              $update3=$start+10;
+              $update4=$start+25;
+              $update5=$start+50;
+              $update6=$start+100;
+              $update7=$start+200;
+
+              if($flag_count==1){
+                      echo "<table border='1'><tr><td align='center'>WHO</td><td align='center'>OBJECT(#)</td><td align='center'>TIMESTAMP</td><td align='center'>CONTENT</td></tr>";
+                      echo "<tr><td align='center'>Visitor1</td><td align='center'>1</td><td align='center'>".date("D M j G:i:s",time())."</td>";
+                      if($count11<$count12){ echo "<td width='550'>Notice the distinctly lighter shades of the colors in this dress from Guatemala, compared to the shawl from El Salvador. Common Guatemalan plants for making clothing dyes are coconut shell, which makes a pinkish-beige color, and St. John's Wort, which makes a yellow color.</td>";}
+                      if($count11>$count12){ echo "<td width='550'>Notice the distinctly darker shades of the colors in this shawl from El Salvador, compared to the dress from Guatemala. The indigo color is created from El Salvador’s native plants.</td>";}
+                      if($count11==$count12){echo "<td width='550'>Notice the distinctly darker shades of the colors in the shawl from El Salvador, compared to the dress from Guatemala. The difference in dye color is due to each country's unique vegetation.</td>";}                      
+//                      echo "<td align='center'>Arduino1[".$count11."][".$count12."]Arduino2</td>";                                               
+                      echo "</tr>";   
+                      echo "</table><br>";                                    
+              }              
+              
+              /*
+              if($flag_count==1){
+                      //echo "HERE!!!!<br>";
+                      //echo "count11='".$count11."' and count12='".$count12."'<br>";
+                      echo "<table border='1'><tr><td align='center'>WHO</td><td align='center'>OBJECT(#)</td><td align='center'>TIMESTAMP</td><td align='center'>CONTENT</td></tr>";
+                      echo "<tr><td align='center'>Visitor1</td><td align='center'>1</td><td align='center'>".date("D M j G:i:s",time())."</td>";
+                           if(($count11==$count12)) echo "<td align='center'>Arduino1[06][06]Arduino2</td>";
+                      else if(($count11==0)&&($count12==12)) echo "<td align='center'>Arduino1[00][12]Arduino2</td>";
+                      else if(($count11==1)&&($count12==11)) echo "<td align='center'>Arduino1[01][11]Arduino2</td>";
+                      else if(($count11==2)&&($count12==10)) echo "<td align='center'>Arduino1[02][10]Arduino2</td>";
+                      else if(($count11==3)&&($count12==9))  echo "<td align='center'>Arduino1[03][09]Arduino2</td>";
+                      else if(($count11==4)&&($count12==8))  echo "<td align='center'>Arduino1[04][08]Arduino2</td>";                         
+                      else if(($count11==5)&&($count12==7))  echo "<td align='center'>Arduino1[05][07]Arduino2</td>";
+//                      else if(($count11==6)&&($count12==6))  echo "<td align='center'>Arduino1[06][06]Arduino2</td>";                         
+                      else if(($count11==7)&&($count12==5))  echo "<td align='center'>Arduino1[07][05]Arduino2</td>";
+                      else if(($count11==8)&&($count12==4))  echo "<td align='center'>Arduino1[08][04]Arduino2</td>";                         
+                      else if(($count11==9)&&($count12==3))  echo "<td align='center'>Arduino1[09][03]Arduino2</td>";
+                      else if(($count11==10)&&($count12==2)) echo "<td align='center'>Arduino1[10][02]Arduino2</td>";                         
+                      else if(($count11==11)&&($count12==1)) echo "<td align='center'>Arduino1[11][01]Arduino2</td>";
+                      else if(($count11==12)&&($count12==0)) echo "<td align='center'>Arduino1[12][00]Arduino2</td>";                         
+                      else echo "<td align='center'>Arduino1[...][...]Arduino2</td>";                                               
+                      echo "</tr>";   
+                      echo "</table><br>";                                    
+              }
+              
+              */
+              else{
+                $result = mysqli_query($con,"SELECT distinct(rfid_tag) FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B'");
+                while ($row = mysqli_fetch_row($result)) {
+                  $result2 = mysqli_query($con,"SELECT unix_timestamp,rfid_tag,arduino,arduino_timestamp FROM aggregation_arduino1_log WHERE rfid_tag!='0D001EFE967B' AND rfid_tag='".$row[0]."' GROUP BY unix_timestamp,rfid_tag, arduino,arduino_timestamp ORDER BY unix_timestamp ASC");
+                  echo "<table border='1'><tr><td>WHO</td><td>OBJECT(#)</td><td>TIMESTAMP</td><td>CONTENT</td></tr>";
+                  while ($row2 = mysqli_fetch_row($result2)) {
+                    if($flag_count==3){
+                      echo "<tr><td align='center'>".$row3[0]."</td><td align='center'>1</td><td align='center'>".date("D M j G:i:s",$row2[0])."</td>";
+                           if(($count11==$count12)) echo "<td align='center'>Arduino1[06][06]Arduino2</td>";
+                      else if(($count11==0)&&($count12==12)) echo "<td align='center'>Arduino1[00][12]Arduino2</td>";
+                      else if(($count11==1)&&($count12==11)) echo "<td align='center'>Arduino1[01][11]Arduino2</td>";
+                      else if(($count11==2)&&($count12==10)) echo "<td align='center'>Arduino1[02][10]Arduino2</td>";
+                      else if(($count11==3)&&($count12==9))  echo "<td align='center'>Arduino1[03][09]Arduino2</td>";
+                      else if(($count11==4)&&($count12==8))  echo "<td align='center'>Arduino1[04][08]Arduino2</td>";                         
+                      else if(($count11==5)&&($count12==7))  echo "<td align='center'>Arduino1[05][07]Arduino2</td>";
+//                      else if(($count11==6)&&($count12==6))  echo "<td align='center'>Arduino1[06][06]Arduino2</td>";                         
+                      else if(($count11==7)&&($count12==5))  echo "<td align='center'>Arduino1[07][05]Arduino2</td>";
+                      else if(($count11==8)&&($count12==4))  echo "<td align='center'>Arduino1[08][04]Arduino2</td>";                         
+                      else if(($count11==9)&&($count12==3))  echo "<td align='center'>Arduino1[09][03]Arduino2</td>";
+                      else if(($count11==10)&&($count12==2)) echo "<td align='center'>Arduino1[10][02]Arduino2</td>";                         
+                      else if(($count11==11)&&($count12==1)) echo "<td align='center'>Arduino1[11][01]Arduino2</td>";
+                      else if(($count11==12)&&($count12==0)) echo "<td align='center'>Arduino1[12][00]Arduino2</td>";          
+                      else echo "<td align='center'>Arduino1[...][...]Arduino2</td>";                                                                     
+                      echo "</tr>";                    
+                    }
+                    else{
+                                        //  echo "HdddERE!!!!<br>";
+
+                      if($row2[2]==1){
+                        $result3 = mysqli_query($con,"SELECT visitor FROM content_arduino1 WHERE value='".$row2[1]."'");
+                        $row3 = mysqli_fetch_row($result3);
+                        echo "<tr><td align='center'>".$row3[0]."</td><td align='center'>1</td><td align='center'>".date("D M j G:i:s",$row2[0])."</td>";
+                             if(($update0<$row2[0])&&($row2[0]<=$update1))  echo "<td align='center'>content0</td>";
+                        else if(($update1<$row2[0])&&($row2[0]<=$update2))  echo "<td align='center'>content1</td>";
+                        else if(($update2<$row2[0])&&($row2[0]<=$update3))  echo "<td align='center'>content2</td>";
+                        else if(($update3<$row2[0])&&($row2[0]<=$update4))  echo "<td align='center'>content3</td>";
+                        else if(($update4<$row2[0])&&($row2[0]<=$update5))  echo "<td align='center'>content4</td>";
+                        else if(($update5<$row2[0])&&($row2[0]<=$update6))  echo "<td align='center'>content5</td>";
+                        else if(($update6<$row2[0])&&($row2[0]<=$update7))  echo "<td align='center'>content6</td>";
+                        else if(($row2[0]<$update7))  echo "<td align='center'>content7</td>";
+                        else echo "<td align='center'>content</td>";                                                                                                                     
+                        echo "</tr>";
+                      }
+                      else if($row2[2]==2){
+                      //echo "HERE!!!!<br>";                      
+                        $result3 = mysqli_query($con,"SELECT visitor FROM content_arduino1 WHERE value='".$row2[1]."'");
+                        $row3 = mysqli_fetch_row($result3);
+                        echo "<tr><td align='center'>".$row3[0]."</td><td align='center'>2</td><td align='center'>".date("D M j G:i:s",$row2[0])."</td>";
+                             if(($update0<$row2[0])&&($row2[0]<=$update1))  echo "<td align='center'>content0</td>";
+                        else if(($update1<$row2[0])&&($row2[0]<=$update2))  echo "<td align='center'>content1</td>";
+                        else if(($update2<$row2[0])&&($row2[0]<=$update3))  echo "<td align='center'>content2</td>";
+                        else if(($update3<$row2[0])&&($row2[0]<=$update4))  echo "<td align='center'>content3</td>";
+                        else if(($update4<$row2[0])&&($row2[0]<=$update5))  echo "<td align='center'>content4</td>";
+                        else if(($update5<$row2[0])&&($row2[0]<=$update6))  echo "<td align='center'>content5</td>";
+                        else if(($update6<$row2[0])&&($row2[0]<=$update7))  echo "<td align='center'>content6</td>";
+                        else if(($row2[0]<$update7))  echo "<td align='center'>content7</td>";
+                        else echo "<td align='center'>content</td>";                                                                                             
+                        echo "</tr>";
+                      }                  
+                    }
+                  }
+                  echo "</table><br>";
+                }
+              }
+              $result3 = mysqli_query($con,"TRUNCATE aggregation_arduino1_log");                          
+            }
+          }
+//          echo "<tr><td colspan='3' align='center'><font size='4'>CLICK 'OFF' BUTTON TO STOP THIS DEMO</td></tr>";
+          mysqli_close($con);
+          
+        ?>              
+      </table>
+    </center>
+  </body>
+</html>
